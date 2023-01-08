@@ -22,6 +22,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/dennistrukhin/go-kmeans"
 	"image"
 	"image/jpeg"
 	"math"
@@ -96,7 +97,7 @@ func main() {
 		}
 	}
 
-	k := New[RGB](m, s, a)
+	k := kmeans.New[RGB](m, s, a)
 	centroids, _ := k.Partition(pixels, 5)
 	for _, c := range centroids {
 		fmt.Printf("%v", c)
