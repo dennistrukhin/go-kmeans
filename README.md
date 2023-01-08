@@ -1,5 +1,7 @@
 # K-Means for golang
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/dennistrukhin/go-kmeans)](https://goreportcard.com/report/github.com/dennistrukhin/go-kmeans)
+
 Поддерживает любые типы данных. Для работы необходимо передать три функции:
 - Metric - метрика, рассчитывающая расстояние между двумя точками
 - Average - функция расчёта среднего значения для проивзольного количества точек
