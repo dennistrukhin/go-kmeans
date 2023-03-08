@@ -47,7 +47,7 @@ func main() {
 		dB := int(y.B) - int(x.B)
 		return math.Sqrt(float64(dR*dR + dG*dG + dB*dB))
 	}
-	s := func() RGB {
+	s := func(_ int) RGB {
 		return RGB{
 			R: uint8(rand.Intn(255)),
 			G: uint8(rand.Intn(255)),

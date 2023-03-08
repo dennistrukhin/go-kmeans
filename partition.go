@@ -1,4 +1,4 @@
-package kmeans
+package main
 
 import (
 	"runtime"
@@ -6,7 +6,7 @@ import (
 )
 
 type Metric[T interface{}] func(x, y T) float64
-type Seeder[T interface{}] func() T
+type Seeder[T interface{}] func(n int) T
 type Average[T interface{}] func(args ...T) T
 
 type KMeans[T interface{}] struct {
@@ -39,13 +39,17 @@ func (km *KMeans[T]) Partition(data []T, num int) ([]T, *[]int) {
 	dl := len(data)
 	centroids := make([]T, num)
 	mapping := make([]int, dl)
+	for i := 0; i < dl; i++ {
+		mapping[i] = -1
+	}
 	for i := 0; i < num; i++ {
-		centroids[i] = km.seeder()
+		centroids[i] = km.seeder(i)
 	}
 
 	gen := 0
 	numProc := runtime.GOMAXPROCS(0)
 	batchSize := dl/numProc + 1
+
 	for {
 		gen++
 		var wgd sync.WaitGroup
@@ -53,16 +57,16 @@ func (km *KMeans[T]) Partition(data []T, num int) ([]T, *[]int) {
 			start := p * batchSize
 			end := min((p+1)*batchSize, dl)
 			wgd.Add(1)
-			go func(wg *sync.WaitGroup, start, end int) {
+			go func(wg *sync.WaitGroup, m *[]int, start, end int) {
 				defer wg.Done()
 				for i := start; i < end; i++ {
 					d := make([]float64, num)
 					for j, c := range centroids {
 						d[j] = km.metric(data[i], c)
 					}
-					mapping[i] = minIndex(d)
+					(*m)[i] = minIndex(d)
 				}
-			}(&wgd, start, end)
+			}(&wgd, &mapping, start, end)
 		}
 		wgd.Wait()
 
